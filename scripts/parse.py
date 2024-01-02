@@ -2,6 +2,7 @@ from typing import List
 from xml.etree.ElementTree import Element
 
 import pandas as pd
+from tqdm import tqdm
 
 import parse_tei
 import parse_bibl_data as parse_bib
@@ -78,12 +79,16 @@ def get_citation_rows(tei_file: str, sections, references, publication_metadata)
 
 def make_citation_context_csv(tei_files: List[str], citation_context_file: str):
     all_rows = []
-    for tei_file in tei_files:
-        print('parsing citation contexts for file', tei_file)
-        tei_header, tei_text = parse_tei.parse_tei_file(tei_file)
-        publication_metadata = get_publication_metadata(tei_header)
-        sections = parse_text.parse_sections(tei_text)
-        references = get_references(tei_text)
+    for tei_file in tqdm(tei_files, desc='parsing citation contexts'):
+        try:
+            tei_header, tei_text = parse_tei.parse_tei_file(tei_file)
+            publication_metadata = get_publication_metadata(tei_header)
+            sections = parse_text.parse_sections(tei_text)
+            references = get_references(tei_text)
+            rows = get_citation_rows(tei_file, sections, references, publication_metadata)
+        except BaseException:
+            print(f'Error parsing citation contexts for file {tei_file}')
+            raise
         rows = get_citation_rows(tei_file, sections, references, publication_metadata)
         all_rows.extend(rows)
     columns = [

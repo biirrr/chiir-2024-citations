@@ -1,13 +1,28 @@
+from typing import List
 from xml.etree.ElementTree import Element
+
+from tqdm import tqdm
 
 import parse_tei
 
 
-def validate_assumptions(tei_text):
-    validate_text_assumptions(tei_text)
-    validate_author_assumptions(tei_text)
-    validate_bibliographic_assumptions(tei_text)
-    validate_reference_assumptions(tei_text)
+def do_validation(tei_files: List[str]) -> None:
+    """Check our assumptions of paper metadata and citation contexts against all TEI files."""
+    for tei_file in tqdm(tei_files, desc='validating assumptions about TEI files'):
+        tei_header, tei_text = parse_tei.parse_tei_file(tei_file)
+        validate_assumptions(tei_file, tei_text)
+    return None
+
+
+def validate_assumptions(tei_file: str, tei_text: Element):
+    try:
+        validate_text_assumptions(tei_text)
+        validate_author_assumptions(tei_text)
+        validate_bibliographic_assumptions(tei_text)
+        validate_reference_assumptions(tei_text)
+    except AssertionError:
+        print(f'Error parsing TEI file {tei_file}:')
+        raise
 
 
 def validate_text_assumptions(tei_text):
@@ -24,7 +39,7 @@ def validate_author_assumptions(tei_text: Element):
             assert child.tag in expected_author_tags, f"unexpected tag in author: '{child.tag}'"
             if parse_tei.has_tag(child, 'persName'):
                 for name in child:
-                    assert name.tag in expected_person_tags, f"unexpected tag in persName: '{child.tag}'"
+                    assert name.tag in expected_person_tags, f"unexpected tag in persName: '{name.tag}'"
 
 
 def validate_reference_assumptions(tei_text: Element):

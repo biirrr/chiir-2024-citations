@@ -1,5 +1,4 @@
 import xml.etree.ElementTree as ElementTree
-from typing import Union
 from xml.etree.ElementTree import Element
 
 
@@ -10,8 +9,8 @@ ns = {
 
 
 ANALYTIC_FIELDS = {'title', 'author', 'idno', 'ptr'}
-AUTHOR_FIELDS = {'persName', 'email', 'idno'}
-PERSONAME_FIELDS = {'forename', 'surname'}
+AUTHOR_FIELDS = {'persName', 'email', 'idno', 'orgName', 'affiliation'}
+PERSONAME_FIELDS = {'forename', 'surname', 'genName'}
 MONOGR_FIELDS = {'title', 'meeting', 'imprint', 'idno', 'editor', 'author', 'ptr', 'respStmt'}
 IMPRINT_FIELDS = {'biblScope', 'date', 'publisher', 'pubPlace'}
 REF_TYPES = {'bibr', 'foot', 'figure', 'table', 'formula'}
